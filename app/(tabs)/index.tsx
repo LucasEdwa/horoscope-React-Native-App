@@ -1,75 +1,56 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+import { Contact } from '@/components/Contact';
+import { Hero1 } from '@/components/Hero1';
+import { Navbar } from '@/components/Navbar';
+import { OracleHero } from '@/components/OracleHero';
 import { ThemedView } from '@/components/ThemedView';
+import { Platform, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <ThemedView style={styles.container}>
+      <Navbar />
+       <Hero1 />
+      <Contact />
+      <OracleHero />
+  
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
   );
 }
-
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? 24 : 0, // Adjust for Android status bar
+    margin: 0,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  backgroundImage: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'cover',
     position: 'absolute',
+    top: 0,
+    left: 0,      
+    zIndex: -1, // Ensure the image is behind other content
   },
+  title: {
+    marginTop: 320, // Adjust based on the parallax height
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333', // Or use your theme/colors
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: semi-transparent background for readability
+    borderRadius: 8, // Optional: rounded corners
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },        
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // For Android shadow
+    // Optional: Add more styles as needed
+  },      
+  // Add more styles as needed
 });
+// This file is the main entry point for the Home screen of your app.
