@@ -1,23 +1,25 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-
 
 export function OracleHero() {
     return (
         <ThemedView style={styles.container}>
-            <View style={styles.backgroundImage}>
+            <ThemedView style={styles.holder}>
+                <Pressable style={styles.titleBtn}>
+                    <ThemedText style={styles.title} type="defaultSemiBold">
+                        Make a quest to The Oracle 
+                    </ThemedText>
+                    <ThemedText style={styles.title} type="defaultSemiBold">
+                        and get your answer
+                    </ThemedText>
+                </Pressable>
                 <Image
-                source={require("@/assets/images/heroEducas-1.png")}
-                style={styles.backgroundImage}
-            />
-            <Pressable style={styles.titleBtn}>
-                <ThemedText style={styles.title} type="defaultSemiBold">
-                    Oracle Cards
-                </ThemedText>
-            </Pressable>
-            </View>
+                    source={require("@/assets/images/heroEducas-1.png")}
+                    style={styles.backgroundImage}
+                />
+            </ThemedView>
         </ThemedView>
     );
 }
@@ -25,36 +27,41 @@ export function OracleHero() {
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        maxHeight: 400,
-        flex: 0.8,
-        justifyContent: "flex-end",
-        alignItems: "center",
+        padding: 10,
+        backgroundColor: "#766787",
+        alignItems: "flex-start", // aligns holder to the start
     },
+    holder: {
+        width: "100%",
+        flexDirection: "row",
+                padding: 16,
 
+        justifyContent: "space-between", // space between the two elements
+        alignItems: "flex-start", // align items to the top of the holder
+        gap: 10, // space between the image and the button
+                backgroundColor: "rgba(127, 42, 42, 0.8)",
+        borderRadius: 30,
+
+    },
     backgroundImage: {
         width: 100,
         height: 100,
         resizeMode: "cover",
-        top: 0,
-        left: 0,
+        
     },
     titleBtn: {
-        padding: 16,
         height: 60,
-        width: 180,
-        borderRadius: 30, // <-- half of height for pill
-        opacity: 0.8,
+        minWidth: 180,
+        opacity: 0.9,
         justifyContent: "center",
-        marginBottom: 20,
         alignItems: "center",
-        zIndex: 2,
+        zIndex: 1,
         overflow: "hidden",
     },
     title: {
         textAlign: "center",
-        fontSize: 18,
-        fontWeight: "semibold",
-        color: "#FEA5A5",
+        fontSize: 17,
+        fontWeight: "600",
+        color: "#766787",
     },
-
 });

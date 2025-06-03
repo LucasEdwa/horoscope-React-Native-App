@@ -3,16 +3,17 @@ import { Hero1 } from '@/components/Hero1';
 import { Navbar } from '@/components/Navbar';
 import { OracleHero } from '@/components/OracleHero';
 import { ThemedView } from '@/components/ThemedView';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 
 export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
+      <ScrollView contentContainerStyle={{ flexGrow: 3 }}>
       <Navbar />
        <Hero1 />
       <Contact />
       <OracleHero />
-  
+      </ScrollView>
       </ThemedView>
   );
 }

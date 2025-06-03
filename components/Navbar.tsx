@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Modal, PanResponder, Pressable, StyleSheet, View } from 'react-native';
 
 const NAV_ITEMS = [
   { label: 'Daily news', onPress: () => {} },
@@ -15,6 +15,34 @@ const SIDEBAR_WIDTH = 220;
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
+
+  // PanResponder for dragging sidebar
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only respond to horizontal drags when menu is open and dragging left
+        return menuOpen && gestureState.dx < -10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        // Move sidebar with finger, but not past closed position
+        if (gestureState.dx < 0) {
+          slideAnim.setValue(Math.max(gestureState.dx, -SIDEBAR_WIDTH));
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        // If dragged more than half way, close; else snap open
+        if (gestureState.dx < -SIDEBAR_WIDTH / 2) {
+          setMenuOpen(false);
+        } else {
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 150,
+            useNativeDriver: false,
+          }).start();
+        }
+      },
+    })
+  ).current;
 
   useEffect(() => {
     if (menuOpen) {
@@ -58,17 +86,12 @@ export function Navbar() {
         onRequestClose={() => setMenuOpen(false)}
       >
         <Pressable style={styles.sidebarOverlay} onPress={() => setMenuOpen(false)}>
-          {/* Prevent sidebar clicks from closing the menu */}
           <Animated.View
             style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}
+            {...panResponder.panHandlers}
             onStartShouldSetResponder={() => true}
           >
-            {/* Close button */}
-            <Pressable onPress={() => setMenuOpen(false)} style={styles.closeButton}>
-              <ThemedText style={styles.closeButtonText} type="defaultSemiBold">
-                ×
-              </ThemedText>
-            </Pressable>
+           
             {NAV_ITEMS.map((item) => (
               <Pressable
                 key={item.label}
@@ -125,7 +148,7 @@ const styles = StyleSheet.create({
   },
   sidebar: {
     width: SIDEBAR_WIDTH,
-    backgroundColor: '#fff',
+    backgroundColor: 'linear-gradient(97.6486deg, rgb(118, 103, 135), rgb(29, 25, 33))', 
     paddingVertical: 32,
     paddingHorizontal: 20,
     borderTopRightRadius: 12,
