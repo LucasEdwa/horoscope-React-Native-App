@@ -10,7 +10,7 @@ export default function SignInScreen() {
   const handleSignIn = () => {
     // Fake sign in logic
     Alert.alert('Sign In', `Signed in as ${email}`);
-    router.push('/(tabs)/index'); // Redirect to home after sign in
+    router.push('/(tabs)'); // Redirect to home after sign in
   };
 
   return (
@@ -31,7 +31,7 @@ export default function SignInScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity onPress={() => router.push('/(tabs)/signup')}>
+      <TouchableOpacity onPress={() => router.push('/pages/signup')}>
         <Text style={styles.signupText}>Create a New Account</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>

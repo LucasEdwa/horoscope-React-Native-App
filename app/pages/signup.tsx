@@ -1,6 +1,7 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 
 export default function SignUpScreen() {
   const [form, setForm] = useState({
@@ -12,14 +13,32 @@ export default function SignUpScreen() {
     city: '',
     country: '',
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
   const router = useRouter();
 
   const handleChange = (key: keyof typeof form, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleDateChange = (_: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      const iso = selectedDate.toISOString().split('T')[0];
+      handleChange('dateOfBirth', iso);
+    }
+  };
+
+  const handleTimeChange = (_: any, selectedTime?: Date) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      const time = selectedTime.toTimeString().slice(0, 5);
+      handleChange('timeOfBirth', time);
+    }
+  };
+
   const handleSignUp = () => {
-    // Fake sign up logic
     Alert.alert(
       'Sign Up',
       `Welcome, ${form.name}!\n\nDOB: ${form.dateOfBirth}\nTime: ${form.timeOfBirth}\nCity: ${form.city}\nCountry: ${form.country}`
@@ -51,18 +70,47 @@ export default function SignUpScreen() {
         onChangeText={v => handleChange('password', v)}
         secureTextEntry
       />
-      <TextInput
-        placeholder="Date of Birth (YYYY-MM-DD)"
+      {/* Modern Date Picker */}
+      <TouchableOpacity
         style={styles.input}
-        value={form.dateOfBirth}
-        onChangeText={v => handleChange('dateOfBirth', v)}
-      />
-      <TextInput
-        placeholder="Time of Birth (HH:MM, 24h)"
+        onPress={() => setShowDatePicker(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={{ color: form.dateOfBirth ? '#333' : '#bbb', fontSize: 16 }}>
+          {form.dateOfBirth ? form.dateOfBirth : 'Date of Birth'}
+        </Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={form.dateOfBirth ? new Date(form.dateOfBirth) : new Date()}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleDateChange}
+          maximumDate={new Date()}
+        />
+      )}
+      {/* Modern Time Picker */}
+      <TouchableOpacity
         style={styles.input}
-        value={form.timeOfBirth}
-        onChangeText={v => handleChange('timeOfBirth', v)}
-      />
+        onPress={() => setShowTimePicker(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={{ color: form.timeOfBirth ? '#333' : '#bbb', fontSize: 16 }}>
+          {form.timeOfBirth ? form.timeOfBirth : 'Time of Birth'}
+        </Text>
+      </TouchableOpacity>
+      {showTimePicker && (
+        <DateTimePicker
+          value={
+            form.timeOfBirth
+              ? new Date(`1970-01-01T${form.timeOfBirth}:00`)
+              : new Date()
+          }
+          mode="time"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={handleTimeChange}
+        />
+      )}
       <TextInput
         placeholder="City of Birth"
         style={styles.input}
@@ -109,6 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: '#e0d7f3',
+    justifyContent: 'center',
   },
   button: {
     backgroundColor: '#6d5cae',
