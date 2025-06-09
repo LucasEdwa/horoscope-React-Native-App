@@ -1,7 +1,12 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import tw from 'twrnc';
+import type { AppDispatch, RootState } from '../../store';
+import { resetSignup, signupUser } from '../../store/signupSlice';
+import { formatTimeInput } from '../../utils/formatTimeInput';
 
 export default function SignUpScreen() {
   const [form, setForm] = useState({
@@ -17,6 +22,8 @@ export default function SignUpScreen() {
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const signupState = useSelector((state: RootState) => state.signup);
 
   const handleChange = (key: keyof typeof form, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -31,33 +38,43 @@ export default function SignUpScreen() {
   };
 
   const handleTimeChange = (_: any, selectedTime?: Date) => {
+    // Always close the picker after selection
     setShowTimePicker(false);
     if (selectedTime) {
-      const time = selectedTime.toTimeString().slice(0, 5);
-      handleChange('timeOfBirth', time);
+      // Use setHours/setMinutes on a new Date to avoid seconds/milliseconds issues
+      const hours = selectedTime.getHours().toString().padStart(2, '0');
+      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+      handleChange('timeOfBirth', `${hours}:${minutes}`);
     }
   };
 
-  const handleSignUp = () => {
-    Alert.alert(
-      'Sign Up',
-      `Welcome, ${form.name}!\n\nDOB: ${form.dateOfBirth}\nTime: ${form.timeOfBirth}\nCity: ${form.city}\nCountry: ${form.country}`
-    );
+  const handleSignUp = async () => {
+    dispatch(resetSignup());
+    dispatch(signupUser(form));
   };
 
+  React.useEffect(() => {
+    if (signupState.success) {
+      Alert.alert('Sign Up', signupState.message);
+      // Optionally navigate to another screen
+    } else if (signupState.error) {
+      Alert.alert('Sign Up Error', signupState.error);
+    }
+  }, [signupState.success, signupState.error]);
+
   return (
-    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.header}>Sign Up</Text>
+    <ScrollView contentContainerStyle={tw`flex-grow justify-center p-6 bg-[#f6f3fa]`} keyboardShouldPersistTaps="handled">
+      <Text style={tw`text-2xl font-bold text-[#6d5cae] mb-7 text-center`}>Sign Up</Text>
       <TextInput
         placeholder="Name"
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
         value={form.name}
         onChangeText={v => handleChange('name', v)}
         autoCapitalize="words"
       />
       <TextInput
         placeholder="Email"
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
         value={form.email}
         onChangeText={v => handleChange('email', v)}
         keyboardType="email-address"
@@ -65,18 +82,18 @@ export default function SignUpScreen() {
       />
       <TextInput
         placeholder="Password"
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
         value={form.password}
         onChangeText={v => handleChange('password', v)}
         secureTextEntry
       />
       {/* Modern Date Picker */}
       <TouchableOpacity
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3] justify-center`}
         onPress={() => setShowDatePicker(true)}
         activeOpacity={0.7}
       >
-        <Text style={{ color: form.dateOfBirth ? '#333' : '#bbb', fontSize: 16 }}>
+        <Text style={tw`${form.dateOfBirth ? 'text-[#333]' : 'text-[#bbb]'} text-base`}>
           {form.dateOfBirth ? form.dateOfBirth : 'Date of Birth'}
         </Text>
       </TouchableOpacity>
@@ -89,91 +106,34 @@ export default function SignUpScreen() {
           maximumDate={new Date()}
         />
       )}
-      {/* Modern Time Picker */}
-      <TouchableOpacity
-        style={styles.input}
-        onPress={() => setShowTimePicker(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={{ color: form.timeOfBirth ? '#333' : '#bbb', fontSize: 16 }}>
-          {form.timeOfBirth ? form.timeOfBirth : 'Time of Birth'}
-        </Text>
-      </TouchableOpacity>
-      {showTimePicker && (
-        <DateTimePicker
-          value={
-            form.timeOfBirth
-              ? new Date(`1970-01-01T${form.timeOfBirth}:00`)
-              : new Date()
-          }
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleTimeChange}
-        />
-      )}
+      {/* Replace time picker with normal input */}
+      <TextInput
+        placeholder="Time of Birth (e.g. 12:45)"
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
+        value={form.timeOfBirth}
+        onChangeText={v => handleChange('timeOfBirth', formatTimeInput(v))}
+        keyboardType="numbers-and-punctuation"
+        autoCapitalize="none"
+        maxLength={5}
+      />
       <TextInput
         placeholder="City of Birth"
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
         value={form.city}
         onChangeText={v => handleChange('city', v)}
       />
       <TextInput
         placeholder="Country of Birth"
-        style={styles.input}
+        style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
         value={form.country}
         onChangeText={v => handleChange('country', v)}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Create Account</Text>
+      <TouchableOpacity style={tw`bg-[#6d5cae] rounded p-3.5 items-center mt-2`} onPress={handleSignUp}>
+        <Text style={tw`text-white font-bold text-base`}>Create Account</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/pages/signin')}>
-        <Text style={styles.linkText}>
-          Already have an account? Sign In
-        </Text>
+        <Text style={tw`text-[#6d5cae] mt-4 text-center`}>Already have an account? Sign In</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f6f3fa',
-  },
-  header: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#6d5cae',
-    marginBottom: 28,
-    textAlign: 'center',
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 16,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#e0d7f3',
-    justifyContent: 'center',
-  },
-  button: {
-    backgroundColor: '#6d5cae',
-    borderRadius: 8,
-    padding: 14,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  linkText: {
-    color: '#6d5cae',
-    marginTop: 16,
-    textAlign: 'center',
-  },
-});

@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
+import tw from 'twrnc';
 
 const VIRGO_DAILY_NEWS = [
   {
@@ -32,66 +33,32 @@ const VIRGO_DAILY_NEWS = [
 
 export default function DailyNewsScreen() {
   return (
-    <View style={styles.container}>
+    <View style={tw`flex-1 bg-[#f6f3fa] pt-10 px-4`}>
       <LinearGradient
         colors={['#766787', '#1D1921']}
-        style={StyleSheet.absoluteFill}
+        style={{ ...tw`absolute inset-0` }}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
-      <Text style={styles.header}>{"Lucas"} Daily Horoscope News</Text>
+      <Text style={tw`text-2xl font-bold text-white mb-4 text-center`}>
+        {"Lucas"} Daily Horoscope News
+      </Text>
       <FlatList
         data={VIRGO_DAILY_NEWS}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.content}>{item.content}</Text>
+          <View style={tw`bg-white rounded-xl p-4 mb-4 shadow`}>
+            <Text style={tw`text-lg font-semibold text-[#6d5cae] mb-1`}>
+              {item.title}
+            </Text>
+            <Text style={tw`text-base text-[#333]`}>
+              {item.content}
+            </Text>
           </View>
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={tw`pb-6`}
         showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f6f3fa',
-    paddingTop: 40,
-    paddingHorizontal: 18,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 18,
-    textAlign: 'center',
-  },
-  listContent: {
-    paddingBottom: 24,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 18,
-    marginBottom: 16,
-    shadowColor: '#6d5cae',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#6d5cae',
-    marginBottom: 6,
-  },
-  content: {
-    fontSize: 15,
-    color: '#333',
-  },
-});

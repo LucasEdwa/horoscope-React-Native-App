@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import tw from 'twrnc';
 
 const QUESTION_LIMIT = 3;
 
@@ -19,35 +20,33 @@ export default function OracleScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={tw`flex-1`}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
+      <View style={tw`flex-1 justify-around items-center bg-[#f6f3fa] px-4 pb-6`}>
         <LinearGradient
           colors={['#766787', '#1D1921']}
-          style={StyleSheet.absoluteFill}
+          style={tw`absolute inset-0`}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         />
         {/* Questions left box */}
-        <View style={styles.questionsLeftBox}>
-          <Text style={styles.questionsLeftText}>{questionsLeft}</Text>
-          <Text style={styles.questionsLeftLabel}>Questions Left</Text>
+        <View style={tw`flex-row items-center self-center rounded-xl px-4 py-1 min-w-[120px] justify-start bg-[#6d5cae]/10`}>
+          <Text style={tw`text-xl font-bold text-white mr-2`}>{questionsLeft}</Text>
+          <Text style={tw`text-base font-semibold text-white`}>Questions Left</Text>
         </View>
-        <Text style={styles.header}>Oracle</Text>
-        <Text style={styles.description}>
-          Ask your question to the Oracle below.
-        </Text>
-        <ScrollView style={styles.history} contentContainerStyle={{ paddingBottom: 16 }}>
+        <Text style={tw`text-2xl font-bold text-white mb-1 text-center z-10`}>Oracle</Text>
+        <Text style={tw`text-base text-white text-center z-10`}>Ask your question to the Oracle below.</Text>
+        <ScrollView style={tw`self-stretch max-h-[280px] mb-2 z-10`} contentContainerStyle={tw`pb-4`}>
           {history.map((q, idx) => (
-            <View key={idx} style={styles.questionBubble}>
-              <Text style={styles.questionText}>{q}</Text>
+            <View key={idx} style={tw`bg-white rounded-lg p-3 self-end max-w-[80%] shadow mb-2`}>
+              <Text style={tw`text-[#333] text-base`}>{q}</Text>
             </View>
           ))}
         </ScrollView>
-        <View style={styles.inputRow}>
+        <View style={tw`flex-row items-center self-stretch z-10`}>
           <TextInput
-            style={styles.input}
+            style={tw`flex-1 bg-white rounded px-3 py-2 text-base border border-[#e0d7f3] mr-2`}
             placeholder="Type your question..."
             placeholderTextColor="#bbb"
             value={question}
@@ -57,115 +56,15 @@ export default function OracleScreen() {
             editable={questionsLeft > 0}
           />
           <TouchableOpacity
-            style={[styles.askButton, { opacity: questionsLeft > 0 ? 1 : 0.5 }]}
+            style={tw`bg-[#6d5cae] rounded px-4 py-3 ${questionsLeft > 0 ? '' : 'opacity-50'}`}
             onPress={handleAsk}
             disabled={questionsLeft <= 0}
           >
-            <Text style={styles.askButtonText}>Ask</Text>
+            <Text style={tw`text-white font-bold text-base`}>Ask</Text>
           </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#f6f3fa',
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-  },
-  questionsLeftBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    borderRadius: 18,
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    elevation: 1,
-    shadowColor: '#6d5cae',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    minWidth: 120,
-    justifyContent: 'flex-start',
-  },
-  questionsLeftText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginRight: 8,
-  },
-  questionsLeftLabel: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 1,
-    textAlign: 'center',
-    zIndex: 1,
-  },
-  description: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
-    zIndex: 1,
-  },
-  history: {
-    alignSelf: 'stretch',
-    maxHeight: 280,
-    marginBottom: 8,
-    zIndex: 1,
-  },
-  questionBubble: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    alignSelf: 'flex-end',
-    maxWidth: '80%',
-    shadowColor: '#6d5cae',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  questionText: {
-    color: '#333',
-    fontSize: 15,
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    zIndex: 1,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#e0d7f3',
-    marginRight: 8,
-  },
-  askButton: {
-    backgroundColor: '#6d5cae',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-  },
-  askButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 

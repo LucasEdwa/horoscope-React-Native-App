@@ -2,7 +2,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Modal, PanResponder, Pressable, View } from 'react-native';
+import tw from 'twrnc';
 
 const NAV_ITEMS = [
   { label: 'Daily news', onPress: () => {} },
@@ -63,20 +64,19 @@ export function Navbar() {
   }, [menuOpen, slideAnim]);
 
   return (
-    <ThemedView style={styles.navbar}>
-        <LinearGradient
-                colors={['#766787', '#1D1921']}
-                
-                style={styles.gradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              />
-      <Pressable onPress={() => setMenuOpen(true)} style={styles.burger}>
-        <View style={styles.burgerLine} />
-        <View style={styles.burgerLine} />
-        <View style={styles.burgerLine} />
+    <ThemedView style={tw`flex-row items-center h-14 p-2.5 bg-white justify-between gap-4`}>
+      <LinearGradient
+        colors={['#766787', '#1D1921']}
+        style={tw`absolute inset-0 z-0`}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+      <Pressable onPress={() => setMenuOpen(true)} style={tw`p-2.5 justify-center items-center`}>
+        <View style={tw`w-6 h-0.75 bg-[#333] my-0.5 rounded`} />
+        <View style={tw`w-6 h-0.75 bg-[#333] my-0.5 rounded`} />
+        <View style={tw`w-6 h-0.75 bg-[#333] my-0.5 rounded`} />
       </Pressable>
-      <ThemedText style={styles.themedText} type="defaultSemiBold">
+      <ThemedText style={tw`text-[#333] text-base font-semibold ml-2`} type="defaultSemiBold">
         My Navbar
       </ThemedText>
       <Modal
@@ -85,13 +85,21 @@ export function Navbar() {
         animationType="none"
         onRequestClose={() => setMenuOpen(false)}
       >
-        <Pressable style={styles.sidebarOverlay} onPress={() => setMenuOpen(false)}>
+        <Pressable style={tw`flex-1 flex-row bg-[rgba(0,0,0,0.2)]`} onPress={() => setMenuOpen(false)}>
           <Animated.View
-            style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}
+            style={[
+              tw`h-full absolute left-0 top-0 bg-white pt-8 px-5 rounded-tr-xl rounded-br-xl shadow`,
+              { width: SIDEBAR_WIDTH, transform: [{ translateX: slideAnim }] }
+            ]}
             {...panResponder.panHandlers}
             onStartShouldSetResponder={() => true}
           >
-           
+            <LinearGradient
+              colors={['#766787', '#1D1921']}
+              style={tw`absolute inset-0 z-0 rounded-tr-xl rounded-br-xl`}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            />
             {NAV_ITEMS.map((item) => (
               <Pressable
                 key={item.label}
@@ -99,9 +107,12 @@ export function Navbar() {
                   setMenuOpen(false);
                   item.onPress();
                 }}
-                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }, styles.menuItem]}
+                style={({ pressed }) => [
+                  tw`py-4`,
+                  { opacity: pressed ? 0.5 : 1 }
+                ]}
               >
-                <ThemedText style={styles.menuText} type="default">
+                <ThemedText style={tw`text-[#333] text-lg`} type="default">
                   {item.label}
                 </ThemedText>
               </Pressable>
@@ -112,76 +123,3 @@ export function Navbar() {
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  navbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 56,
-    padding: 10,
-    backgroundColor: '#fff',
-    justifyContent: 'space-between',
-    gap: 16,
-  },
-  burger: {
-    padding: 11,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  burgerLine: {
-    width: 24,
-    height: 3,
-    backgroundColor: '#333',
-    marginVertical: 2,
-    borderRadius: 2,
-  },
-  themedText: {
-    color: '#333',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  sidebarOverlay: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0,0,0,0.2)',
-  },
-  sidebar: {
-    width: SIDEBAR_WIDTH,
-    backgroundColor: 'linear-gradient(97.6486deg, rgb(118, 103, 135), rgb(29, 25, 33))', 
-    paddingVertical: 32,
-    paddingHorizontal: 20,
-    borderTopRightRadius: 12,
-    borderBottomRightRadius: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 2, height: 0 },
-    justifyContent: 'flex-start',
-    height: '100%',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-  },
-  menuItem: {
-    paddingVertical: 16,
-  },
-  menuText: {
-    color: '#333',
-    fontSize: 18,
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    padding: 8,
-    marginBottom: 16,
-  },
-  closeButtonText: {
-    fontSize: 28,
-    color: '#333',
-  },
-  gradient: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 0,
-  },
-});
