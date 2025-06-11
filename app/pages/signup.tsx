@@ -99,11 +99,17 @@ export default function SignUpScreen() {
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
-          value={form.dateOfBirth ? new Date(form.dateOfBirth) : new Date()}
+          value={
+            form.dateOfBirth && !isNaN(Date.parse(form.dateOfBirth))
+              ? new Date(form.dateOfBirth)
+              : new Date()
+          }
           mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
           onChange={handleDateChange}
           maximumDate={new Date()}
+          // Add this line for Android to allow month/year change
+          // For iOS, 'spinner' is fine, for Android use 'calendar' or 'default'
         />
       )}
       {/* Replace time picker with normal input */}

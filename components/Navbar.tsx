@@ -76,9 +76,7 @@ export function Navbar() {
         <View style={tw`w-6 h-0.75 bg-[#333] my-0.5 rounded`} />
         <View style={tw`w-6 h-0.75 bg-[#333] my-0.5 rounded`} />
       </Pressable>
-      <ThemedText style={tw`text-[#333] text-base font-semibold ml-2`} type="defaultSemiBold">
-        My Navbar
-      </ThemedText>
+     
       <Modal
         visible={menuOpen}
         transparent

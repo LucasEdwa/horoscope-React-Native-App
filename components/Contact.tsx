@@ -1,58 +1,23 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
+import tw from 'twrnc';
 
 export function Contact() {
     return (
         <>
-            <ThemedView style={styles.screen}>
-                <ThemedText style={styles.buttonText} type="defaultSemiBold">
+            <ThemedView style={tw`w-full flex-row items-start bg-[#766787]  gap-5 p-2`}>
+                <ThemedText style={tw`text-2xl text-[#FEA5A5] items-center  font-semibold italic text-center`} type="defaultSemiBold">
                     Contact a Tarolog
-                </ThemedText>
-                <Pressable style={styles.button}>
-                    <ThemedText style={styles.subText} type="default">
+                      <Pressable style={tw`items-center rounded-3xl text-center mt-3  hover:underline `}>
+                    <ThemedText style={tw`text-lg text-[#FEA5A5] font-bold ml-3`} type="default">
                         Click Now!
                     </ThemedText>
                 </Pressable>
+                </ThemedText>
+              
             </ThemedView>
-
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    screen: {
-        width: '100%',
-        flex: 0.1,
-        backgroundColor: '#766787',
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-        gap: 20,
-        maxHeight: 50,
-    },
-    button: {
-
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 24,
-        marginTop: 10,
-        padding: 2,
-
-
-
-    },
-    buttonText: {
-        fontSize: 25,
-        color: '#FEA5A5',
-        marginTop: 10,
-        fontWeight: 'semibold',
-        fontStyle: 'italic',
-
-    },
-    subText: {
-        fontSize: 25,
-        color: '#FEA5A5',
-        fontWeight: 'bold',
-    },
-});

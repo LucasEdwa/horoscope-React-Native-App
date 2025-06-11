@@ -22,6 +22,7 @@ const SIGNIN_MUTATION = gql`
     signin(email: $email, password: $password) {
       success
       message
+      email
     }
   }
 `;
@@ -35,7 +36,7 @@ export const signinUser = createAsyncThunk(
     try {
       const endpoint = 'http://localhost:3001/signin'; // Change to your server address if needed
       const data = await request(endpoint, SIGNIN_MUTATION, variables) as {
-        signin: { success: boolean; message: string }
+        signin: { success: boolean; message: string, email: string }
       };
       return data.signin;
     } catch (error: any) {
@@ -62,21 +63,20 @@ const signinSlice = createSlice({
         state.loading = true;
         state.error = null;
         state.success = false;
-        state.message = '';
-        state.email = null; // <-- add this line
+        state.email = null; // clear previous email
       })
       .addCase(signinUser.fulfilled, (state, action) => {
         state.loading = false;
         state.success = action.payload.success;
         state.message = action.payload.message;
-        state.email = action.meta.arg.email; // <-- store email on success
+        state.email = action.payload.email; // <-- store email from response
+        state.error = null;
       })
       .addCase(signinUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
         state.success = false;
-        state.message = '';
-        state.email = null; // <-- add this line
+        state.error = action.payload as string;
+        state.email = null;
       });
   },
 });

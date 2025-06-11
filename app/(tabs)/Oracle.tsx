@@ -37,7 +37,7 @@ export default function OracleScreen() {
         </View>
         <Text style={tw`text-2xl font-bold text-white mb-1 text-center z-10`}>Oracle</Text>
         <Text style={tw`text-base text-white text-center z-10`}>Ask your question to the Oracle below.</Text>
-        <ScrollView style={tw`self-stretch max-h-[280px] mb-2 z-10`} contentContainerStyle={tw`pb-4`}>
+        <ScrollView style={tw`self-stretch max-h-[220px] mb-2 z-10`} contentContainerStyle={tw`pb-4`}>
           {history.map((q, idx) => (
             <View key={idx} style={tw`bg-white rounded-lg p-3 self-end max-w-[80%] shadow mb-2`}>
               <Text style={tw`text-[#333] text-base`}>{q}</Text>
