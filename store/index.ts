@@ -1,15 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import signinReducer from './signinSlice';
-import signupReducer from './signupSlice';
 import userReducer from './userSlice';
 import zodiacChartReducer from './zodiacChartSlice';
 
 const rootReducer = combineReducers({
-  signup: signupReducer,
-  signin: signinReducer,
-  zodiacChart: zodiacChartReducer,
   user: userReducer,
+  zodiacChart: zodiacChartReducer,
 });
 
 export const store = configureStore({

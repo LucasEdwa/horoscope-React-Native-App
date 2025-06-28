@@ -1,31 +1,33 @@
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import type { AppDispatch, RootState } from '../../store';
-import { resetSignin, signinUser } from '../../store/signinSlice';
+import { resetUser, signinUser } from '../../store/userSlice';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const signinState = useSelector((state: RootState) => state.signin);
+  const userState = useSelector((state: RootState) => state.user);
 
   const handleSignIn = () => {
-    dispatch(resetSignin());
+    dispatch(resetUser());
     dispatch(signinUser({ email, password }));
   };
 
-  React.useEffect(() => {
-    if (signinState.success) {
-      Alert.alert('Sign In', signinState.message);
+  useEffect(() => {
+    if (userState.success && userState.isAuthenticated) {
+      Alert.alert('Sign In', userState.message);
       router.push('/(tabs)');
-    } else if (signinState.error) {
-      Alert.alert('Sign In Error', signinState.error);
+    } else if (userState.error) {
+      Alert.alert('Sign In Error', userState.error);
+    } else if (!userState.loading && userState.message && !userState.success) {
+      Alert.alert('Sign In Error', userState.message);
     }
-  }, [signinState.success, signinState.error]);
+  }, [userState.success, userState.error, userState.loading, userState.message, userState.isAuthenticated]);
 
   return (
     <View style={tw`flex-1 justify-center p-6 bg-[#f6f3fa]`}>

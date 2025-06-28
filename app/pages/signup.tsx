@@ -1,11 +1,11 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Platform, ScrollView, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import type { AppDispatch, RootState } from '../../store';
-import { resetSignup, signupUser } from '../../store/signupSlice';
+import { resetUser, signupUser } from '../../store/userSlice';
 import { formatTimeInput } from '../../utils/formatTimeInput';
 
 export default function SignUpScreen() {
@@ -19,11 +19,10 @@ export default function SignUpScreen() {
     country: '',
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const signupState = useSelector((state: RootState) => state.signup);
+  const userState = useSelector((state: RootState) => state.user);
 
   const handleChange = (key: keyof typeof form, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -37,30 +36,20 @@ export default function SignUpScreen() {
     }
   };
 
-  const handleTimeChange = (_: any, selectedTime?: Date) => {
-    // Always close the picker after selection
-    setShowTimePicker(false);
-    if (selectedTime) {
-      // Use setHours/setMinutes on a new Date to avoid seconds/milliseconds issues
-      const hours = selectedTime.getHours().toString().padStart(2, '0');
-      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
-      handleChange('timeOfBirth', `${hours}:${minutes}`);
-    }
-  };
-
-  const handleSignUp = async () => {
-    dispatch(resetSignup());
+  const handleSignUp = () => {
+    dispatch(resetUser());
     dispatch(signupUser(form));
   };
 
-  React.useEffect(() => {
-    if (signupState.success) {
-      Alert.alert('Sign Up', signupState.message);
-      // Optionally navigate to another screen
-    } else if (signupState.error) {
-      Alert.alert('Sign Up Error', signupState.error);
+  useEffect(() => {
+    if (userState.success) {
+      Alert.alert('Sign Up', userState.message);
+      // Optionally navigate to signin screen
+      router.push('/pages/signin');
+    } else if (userState.error) {
+      Alert.alert('Sign Up Error', userState.error);
     }
-  }, [signupState.success, signupState.error]);
+  }, [userState.success, userState.error, userState.message]);
 
   return (
     <ScrollView contentContainerStyle={tw`flex-grow justify-center p-6 bg-[#f6f3fa]`} keyboardShouldPersistTaps="handled">
@@ -87,7 +76,6 @@ export default function SignUpScreen() {
         onChangeText={v => handleChange('password', v)}
         secureTextEntry
       />
-      {/* Modern Date Picker */}
       <TouchableOpacity
         style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3] justify-center`}
         onPress={() => setShowDatePicker(true)}
@@ -108,11 +96,8 @@ export default function SignUpScreen() {
           display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
           onChange={handleDateChange}
           maximumDate={new Date()}
-          // Add this line for Android to allow month/year change
-          // For iOS, 'spinner' is fine, for Android use 'calendar' or 'default'
         />
       )}
-      {/* Replace time picker with normal input */}
       <TextInput
         placeholder="Time of Birth (e.g. 12:45)"
         style={tw`bg-white rounded p-3.5 mb-4 text-base border border-[#e0d7f3]`}
