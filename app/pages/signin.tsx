@@ -9,25 +9,45 @@ import { resetUser, signinUser } from '../../store/userSlice';
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [alertShown, setAlertShown] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const userState = useSelector((state: RootState) => state.user);
 
   const handleSignIn = () => {
     dispatch(resetUser());
+    setAlertShown(false); // Reset alert state on new attempt
     dispatch(signinUser({ email, password }));
   };
 
   useEffect(() => {
-    if (userState.success && userState.isAuthenticated) {
-      Alert.alert('Sign In', userState.message);
-      router.push('/(tabs)');
-    } else if (userState.error) {
-      Alert.alert('Sign In Error', userState.error);
-    } else if (!userState.loading && userState.message && !userState.success) {
-      Alert.alert('Sign In Error', userState.message);
+    if (!alertShown) {
+      if (userState.success && userState.isAuthenticated) {
+        Alert.alert('Sign In', userState.message);
+        setAlertShown(true);
+        router.push('/(tabs)');
+      } else if (userState.error) {
+        Alert.alert('Sign In Error', userState.error);
+        setAlertShown(true);
+      } else if (!userState.loading && userState.message && !userState.success) {
+        Alert.alert('Sign In Error', userState.message);
+        setAlertShown(true);
+      }
     }
-  }, [userState.success, userState.error, userState.loading, userState.message, userState.isAuthenticated]);
+  }, [
+    userState.success,
+    userState.error,
+    userState.loading,
+    userState.message,
+    userState.isAuthenticated,
+    alertShown,
+    router,
+  ]);
+
+  // Reset alertShown if user changes input
+  useEffect(() => {
+    setAlertShown(false);
+  }, [email, password]);
 
   return (
     <View style={tw`flex-1 justify-center p-6 bg-[#f6f3fa]`}>
